@@ -14,6 +14,8 @@ export class User {
     password!: string;
     @Prop({required:true})
     age!: number;
+    @Prop({ required: false})
+    profilePhoto?: string;
     
 }
 

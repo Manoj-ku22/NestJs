@@ -5,20 +5,24 @@ import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 
 
-
 @Injectable()
 export class UsersService {
 
     constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
-    async create(data: CreateUserDto) {
+    async create(data: CreateUserDto, file?: Express.Multer.File) {
         try {
             const existingUser = await this.userModel.findOne({ email: data.email });
             if (existingUser) {
                 throw new ConflictException('User already exists with this email');
             }
 
-            const user = await this.userModel.create(data);
+            const userData = { ...data };
+            if (file) {
+                userData.profilePhoto = file.path;
+            }
+
+            const user = await this.userModel.create(userData);
             return {
                 message: 'User created successfully',
                 data: user,
